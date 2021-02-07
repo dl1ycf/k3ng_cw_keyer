@@ -2170,6 +2170,28 @@ unsigned long millis_rollover = 0;
   #include "keyer_callsign_prefixes.h"
 #endif
 
+#if defined(HARDWARE_MIDI_TEENSY)
+#include <Audio.h>
+//#include <Wire.h>
+//#include <SPI.h>
+//#include <SD.h>
+//#include <SerialFlash.h>
+#include "src/TeensyAudioTone/TeensyAudioTone.h"
+
+AudioInputUSB            usb1;
+AudioSynthWaveformSine   sine1;
+TeensyAudioTone          teensyaudiotone;
+AudioOutputI2S           i2s1;    
+
+AudioConnection          patchinl(usb1,  0, teensyaudiotone, 0);
+AudioConnection          patchinr(usb1,  1, teensyaudiotone, 1);
+AudioConnection          patchwav(sine1, 0, teensyaudiotone, 2);
+
+AudioConnection          patchoutl(teensyaudiotone, 0, i2s1, 0);
+AudioConnection          patchoutr(teensyaudiotone, 1, i2s1, 1);
+
+AudioControlSGTL5000     sgtl5000_1;
+#endif
 
 #ifdef FEATURE_CLOCK
   unsigned long clock_years = 0;
@@ -22183,10 +22205,22 @@ void midi_setup() {
 
   // set callback for commands
   usbMIDI.setHandleControlChange(myControlChange);   
+
+  AudioMemory(16);
+
+  AudioNoInterrupts();
+
+  sine1.frequency(600);
+  sine1.amplitude(1.0);
+  sgtl5000_1.enable();
+  sgtl5000_1.volume(0.8);
+
+  AudioInterrupts();
 }
 
 void midi_key_tx(int state) {
 
+  teensyaudiotone.setTone(state);
   if (state) {
     usbMIDI.sendNoteOn(base_note+1, 99, keyer_channel);
   } else {
