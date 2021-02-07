@@ -33,7 +33,6 @@
 #define default_pot_full_scale_reading 1023
 #define default_weighting 50             // 50 = weighting factor of 1 (normal)
 #define default_ptt_hang_time_wordspace_units 0.0
-#define memory_area_end 1023             // the eeprom location where memory space ends
 #define winkey_c0_wait_time 1            // the number of milliseconds to wait to send 0xc0 byte after send buffer has been sent
 #define winkey_command_timeout_ms 5000
 #define winkey_discard_bytes_startup 3   // this is used if OPTION_WINKEY_DISCARD_BYTES_AT_STARTUP is enabled above
@@ -49,7 +48,8 @@
 #define serial_cut_numbers 0              // set to 1 to activate cut numbers in serial numbers (i.e. #10 = 1T, #19 = 1N)
 #define go_to_sleep_inactivity_time 10    // minutes - FEATURE_SLEEP
 #define default_cmos_super_keyer_iambic_b_timing_percent 33 // use with FEATURE_CMOS_SUPER_KEYER_IAMBIC_B_TIMING; should be between 0 to 99 % (0% = true iambic b;100% = iambic a behavior)
-#define cw_echo_timing_factor 0.25
+#define default_cw_echo_timing_factor 0.25
+#define default_autospace_timing_factor 2.0 // "factory default" setting
 #define winkey_paddle_echo_buffer_decode_timing_factor 0.25
 #define potentiometer_always_on 0
 #define ptt_interlock_check_every_ms 100
@@ -66,6 +66,8 @@
 #define default_wordsworth_repetition 1
 #define serial_program_memory_buffer_size 500
 #define eeprom_write_time_ms 30000
+
+#define sidetone_line_inactive_state LOW
 
 #ifdef FEATURE_COMMAND_BUTTONS
   #define analog_buttons_number_of_buttons 4  // includes the command button (command button + 3 memory buttons = 4)
