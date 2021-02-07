@@ -1394,6 +1394,8 @@ If you offer a hardware kit using this software, show your appreciation by sendi
   #include "keyer_features_and_options_maple_mini.h"
 #elif defined(HARDWARE_GENERIC_STM32F103C)//sp5iou 20180329
   #include "keyer_features_and_options_generic_STM32F103C.h"
+#elif defined(HARDWARE_MIDI_TEENSY)
+  #include "keyer_features_and_options_midi_teensy.h"
 #elif defined(HARDWARE_MORTTY)
   #include "keyer_features_and_options_mortty.h"
 #elif defined(HARDWARE_MORTTY_REGULAR)
@@ -1459,6 +1461,9 @@ If you offer a hardware kit using this software, show your appreciation by sendi
 #elif defined(HARDWARE_GENERIC_STM32F103C)
   #include "keyer_pin_settings_generic_STM32F103C.h"
   #include "keyer_settings_generic_STM32F103C.h"
+#elif defined(HARDWARE_MIDI_TEENSY)
+  #include "keyer_pin_settings_midi_teensy.h"
+  #include "keyer_settings_midi_teensy.h"
 #elif defined(HARDWARE_MORTTY)
   #include "keyer_pin_settings_mortty.h"
   #include "keyer_settings_mortty.h"  
@@ -2269,6 +2274,10 @@ void setup()
   initialize_sd_card();  
   initialize_debug_startup();
 
+  // DL3LSM added for Teensy MIDI interface
+  #if defined(HARDWARE_MIDI_TEENSY)
+    midi_setup();
+  #endif
 }
 
 // --------------------------------------------------------------------------------------------
@@ -2424,6 +2433,13 @@ void loop()
 
   service_millis_rollover();
 
+  // DL3LSM added for Teensy MIDI interface
+  #if defined(HARDWARE_MIDI_TEENSY)
+    // Read commands from input channel, callbacks are set up
+    while (usbMIDI.read(input_channel)) {
+      // ignore incoming messages
+  }
+  #endif // defined(HARDWARE_MIDI_TEENSY)
   
 }
 
@@ -5682,10 +5698,18 @@ void ptt_key(){
 
           #if defined(FEATURE_WINKEY_EMULATION) && defined(OPTION_WINKEY_PINCONFIG_PTT_CONTROLS_PTT_LINE)
             if (winkey_pinconfig_ptt_bit){
+              #if defined(HARDWARE_MIDI_TEENSY) // DL3LSM added for Teensy MIDI interface
+                midi_key_ptt(1);
+              #else
               digitalWrite (configuration.current_ptt_line, ptt_line_active_state);
+              #endif
             }
           #else
+            #if defined(HARDWARE_MIDI_TEENSY) // DL3LSM added for Teensy MIDI interface
+                midi_key_ptt(1);
+            #else
             digitalWrite (configuration.current_ptt_line, ptt_line_active_state);  
+            #endif  
           #endif // defined(FEATURE_WINKEY_EMULATION) && !defined(OPTION_WINKEY_PINCONFIG_PTT_CONTROLS_PTT_HOLD) 
 
 
@@ -5701,10 +5725,18 @@ void ptt_key(){
 
           #if defined(FEATURE_WINKEY_EMULATION) && defined(OPTION_WINKEY_PINCONFIG_PTT_CONTROLS_PTT_LINE)
             if (winkey_pinconfig_ptt_bit){
+              #if defined(HARDWARE_MIDI_TEENSY) // DL3LSM added for Teensy MIDI interface
+                midi_key_ptt(1);
+              #else
               digitalWrite (configuration.current_ptt_line, ptt_line_active_state);
+              #endif
             }
           #else
+            #if defined(HARDWARE_MIDI_TEENSY) // DL3LSM added for Teensy MIDI interface
+                midi_key_ptt(1);
+            #else
             digitalWrite (configuration.current_ptt_line, ptt_line_active_state);  
+            #endif
           #endif // defined(FEATURE_WINKEY_EMULATION) && !defined(OPTION_WINKEY_PINCONFIG_PTT_CONTROLS_PTT_HOLD) 
 
         //digitalWrite (configuration.current_ptt_line, ptt_line_active_state); 
@@ -5853,7 +5885,11 @@ void ptt_unkey(){
         digitalWrite (current_tx_ptt_line, ptt_line_inactive_state);
     #else
       if (configuration.current_ptt_line) {
+        #if defined(HARDWARE_MIDI_TEENSY) // DL3LSM added for Teensy MIDI interface
+          midi_key_ptt(0);
+        #else
         digitalWrite (configuration.current_ptt_line, ptt_line_inactive_state);
+        #endif
         #if defined(OPTION_WINKEY_2_SUPPORT) && defined(FEATURE_WINKEY_EMULATION)
           if ((wk2_both_tx_activated) && (ptt_tx_2)) {
             digitalWrite (ptt_tx_2, ptt_line_inactive_state);
@@ -6621,6 +6657,10 @@ void tx_and_sidetone_key (int state)
         byte previous_ptt_line_activated = ptt_line_activated;
         ptt_key();
         if (current_tx_key_line) {digitalWrite (current_tx_key_line, tx_key_line_active_state);}
+        // DL3LSM added for Teensy MIDI interface
+        #if defined(HARDWARE_MIDI_TEENSY)
+          midi_key_tx(1);
+        #endif
         #if defined(OPTION_WINKEY_2_SUPPORT) && defined(FEATURE_WINKEY_EMULATION) && !defined(FEATURE_SO2R_BASE)
           if ((wk2_both_tx_activated) && (tx_key_line_2)) {
             digitalWrite (tx_key_line_2, HIGH);
@@ -6644,6 +6684,10 @@ void tx_and_sidetone_key (int state)
       if ((state == 0) && (key_state)) {
         if (key_tx) {
           if (current_tx_key_line) {digitalWrite (current_tx_key_line, tx_key_line_inactive_state);}
+          // DL3LSM added for Teensy MIDI interface
+          #if defined(HARDWARE_MIDI_TEENSY)
+            midi_key_tx(0);
+          #endif
           #if defined(OPTION_WINKEY_2_SUPPORT) && defined(FEATURE_WINKEY_EMULATION) && !defined(FEATURE_SO2R_BASE)
             if ((wk2_both_tx_activated) && (tx_key_line_2)) {
               digitalWrite (tx_key_line_2, LOW);
@@ -6671,6 +6715,10 @@ void tx_and_sidetone_key (int state)
           ptt_key();
         }
         if (current_tx_key_line) {digitalWrite (current_tx_key_line, tx_key_line_active_state);}
+        // DL3LSM added for Teensy MIDI interface
+        #if defined(HARDWARE_MIDI_TEENSY)
+          midi_key_tx(1);
+        #endif
         #if defined(OPTION_WINKEY_2_SUPPORT) && defined(FEATURE_WINKEY_EMULATION) && !defined(FEATURE_SO2R_BASE)
           if ((wk2_both_tx_activated) && (tx_key_line_2)) {
             digitalWrite (tx_key_line_2, HIGH);
@@ -6694,6 +6742,10 @@ void tx_and_sidetone_key (int state)
       if ((state == 0) && (key_state)) {
         if (key_tx) {
           if (current_tx_key_line) {digitalWrite (current_tx_key_line, tx_key_line_inactive_state);}
+          // DL3LSM added for Teensy MIDI interface
+          #if defined(HARDWARE_MIDI_TEENSY)
+            midi_key_tx(0);
+          #endif
           #if defined(OPTION_WINKEY_2_SUPPORT) && defined(FEATURE_WINKEY_EMULATION) && !defined(FEATURE_SO2R_BASE)
             if ((wk2_both_tx_activated) && (tx_key_line_2)) {
               digitalWrite (tx_key_line_2, LOW);
@@ -10192,6 +10244,10 @@ void winkey_unbuffered_speed_command(byte incoming_serial_byte) {
       update_led_ring();
     #endif //FEATURE_LED_RING    
     
+    // DL3LSM added for Teensy MIDI interface
+    #if defined(HARDWARE_MIDI_TEENSY)
+      midi_send_wpm_response();
+    #endif // defined(HARDWARE_MIDI_TEENSY)
   }
 
 }
@@ -22120,9 +22176,131 @@ void debug_blink(){
 //
 //
 
+// DL3LSM added for Teensy MIDI interface
+#if defined(HARDWARE_MIDI_TEENSY)
 
+void midi_setup() {
 
+  // set callback for commands
+  usbMIDI.setHandleControlChange(myControlChange);   
+}
 
+void midi_key_tx(int state) {
+
+  if (state) {
+    usbMIDI.sendNoteOn(base_note+1, 99, keyer_channel);
+  } else {
+    usbMIDI.sendNoteOff(base_note+1, 0, keyer_channel);
+  }
+}
+
+void midi_key_ptt(int state) {
+
+  if (state) {
+    usbMIDI.sendNoteOn(base_note+0, 99, keyer_channel);
+  } else {
+    usbMIDI.sendNoteOff(base_note+0, 0, keyer_channel);
+  }
+}
+
+// MIDI callback
+void myControlChange(byte channel, byte control, byte value) {
+
+  // debug
+  //usbMIDI.sendNoteOn(base_note+1, 99, keyer_channel);
+  //delay(100);
+  //usbMIDI.sendNoteOff(base_note+1, 0, keyer_channel);
+  // end debug 
+  
+  int ok = 1;
+  
+  if (channel != input_channel) {
+    // error, unexpected channel
+    sendMidiResponseOk(0);
+    return;
+  }
+
+  switch (control) {
+    case is_keyer_control:
+      // no switching in this Sketch
+      sendMidiResponseOk(0);
+//      if (value > 0) {
+//        setupIambic(1); 
+//      } else {
+//        setupIambic(0);
+//      }
+      break;
+    case iambic_control:
+      if (value > 0) {
+        setupIambicMode(1); 
+      } else {
+        setupIambicMode(0);
+      }
+      break;
+    case wpm_control:
+      speed_set(value);
+      winkey_port_write(((value - pot_wpm_low_value)|128),0);
+      break;
+    case reverse_control:
+      if (value > 0) {
+        configuration.paddle_mode = PADDLE_REVERSE;
+      } else {
+        configuration.paddle_mode = PADDLE_NORMAL;
+      }
+      break;
+    case get_keyer_state_control:
+      sendKeyerStateResponse();
+      break;
+    default:
+      // unknown command
+      sendMidiResponseOk(0);
+  }
+
+  if (ok == 1) {
+    sendMidiResponseOk(1);
+  } else {
+    sendMidiResponseOk(0);
+  }
+}
+
+void setupIambicMode(int modeB) {
+
+  if (modeB == 1) {
+    configuration.keyer_mode = IAMBIC_B;
+  } else {
+    configuration.keyer_mode = IAMBIC_A;
+  }
+  config_dirty = 1;
+}
+
+void sendMidiResponseOk(int ok) {
+
+  if (ok == 1) {
+    // ok
+    usbMIDI.sendControlChange(response_ok, 99, response_channel);
+  } else {
+    // error
+    usbMIDI.sendControlChange(response_fail, 0, response_channel);
+  }
+}
+
+void sendKeyerStateResponse() {
+
+  usbMIDI.sendControlChange(response_is_keyer, 2, response_channel);
+  usbMIDI.sendControlChange(response_wpm, configuration.wpm, response_channel);
+  usbMIDI.sendControlChange(response_reverse, ( configuration.paddle_mode == PADDLE_REVERSE ? 1 : 0 ), response_channel);
+  if (configuration.keyer_mode == IAMBIC_B) {
+    usbMIDI.sendControlChange(response_iambic, 1, response_channel);
+  } else if (configuration.keyer_mode == IAMBIC_A) {
+    usbMIDI.sendControlChange(response_iambic, 0, response_channel);
+  }
+}
+
+void midi_send_wpm_response() {
+  usbMIDI.sendControlChange(response_wpm, configuration.wpm, response_channel);
+}
+
+#endif // defined(HARDWARE_MIDI_TEENSY)
 
 
 /*
