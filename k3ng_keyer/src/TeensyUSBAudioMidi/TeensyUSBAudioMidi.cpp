@@ -20,51 +20,43 @@
  * THE SOFTWARE.
  */
 
-#ifndef TeensyAudioTone_h_
-#define TeensyAudioTone_h_
-
-#include "Arduino.h"
-#include "Audio.h"
-#include "AudioStream.h"
-#include "arm_math.h"
-
-#define SAMPLES_PER_MSEC (AUDIO_SAMPLE_RATE_EXACT/1000.0)
+#include <Arduino.h>
+#include "TeensyUSBAudioMidi.h"
+#include "utility/dspinst.h"
 
 
-class TeensyAudioTone : public AudioStream
+void TeensyUSBAudioMidi::setup(void)
 {
-public:
-    TeensyAudioTone() : AudioStream(3, inputQueueArray) {
-        tone = 0;
-        hangtime = milliseconds2count(6.0);
-        windowindex = 0;
+    AudioMemory(16);
+    AudioNoInterrupts();
+
+    sine.frequency(600);
+    sine.amplitude(1.0);
+    sgtl5000.enable();
+    sgtl5000.volume(0.8);
+
+    AudioInterrupts();
+
+}
+
+void TeensyUSBAudioMidi::loop(void)
+{
+    while (midip->read(2)) {
+        if (midip->getType() == midip->ControlChange) {
+            serialp->println("Control Change");
+        }
     }
+}
 
-    virtual void update(void);
+void TeensyUSBAudioMidi::key(int state)
+{
+    teensyaudiotone.setTone(state);
 
-    void setTone(uint8_t state) {
-        tone = state;
-    }
+}
 
-    void setHangTime(float milliseconds) {
-        hangtime = milliseconds2count(milliseconds);
-    }
+void TeensyUSBAudioMidi::ptt(int state)
+{
+    sine.frequency(600);
+}
 
-private:
-    uint16_t milliseconds2count(float milliseconds) {
-        if (milliseconds < 0.0) milliseconds = 0.0;
-        uint32_t c = ((uint32_t)(milliseconds*SAMPLES_PER_MSEC)+7)>>3;
-        if (c > 65535) c = 65535; // allow up to 11.88 seconds
-        return c;
-    }
-    audio_block_t *inputQueueArray[3];
 
-    uint8_t tone;
-
-    uint16_t hangtime;
-
-    uint8_t windowindex;
-};
-
-#undef SAMPLES_PER_MSEC
-#endif

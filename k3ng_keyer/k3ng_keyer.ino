@@ -2171,26 +2171,11 @@ unsigned long millis_rollover = 0;
 #endif
 
 #if defined(HARDWARE_MIDI_TEENSY)
-#include <Audio.h>
-//#include <Wire.h>
-//#include <SPI.h>
-//#include <SD.h>
-//#include <SerialFlash.h>
-#include "src/TeensyAudioTone/TeensyAudioTone.h"
 
-AudioInputUSB            usb1;
-AudioSynthWaveformSine   sine1;
-TeensyAudioTone          teensyaudiotone;
-AudioOutputI2S           i2s1;    
+#include "src/TeensyUSBAudioMidi/TeensyUSBAudioMidi.h"
 
-AudioConnection          patchinl(usb1,  0, teensyaudiotone, 0);
-AudioConnection          patchinr(usb1,  1, teensyaudiotone, 1);
-AudioConnection          patchwav(sine1, 0, teensyaudiotone, 2);
+TeensyUSBAudioMidi       teensyusbaudiomidi(primary_serial_port,&usbMIDI);
 
-AudioConnection          patchoutl(teensyaudiotone, 0, i2s1, 0);
-AudioConnection          patchoutr(teensyaudiotone, 1, i2s1, 1);
-
-AudioControlSGTL5000     sgtl5000_1;
 #endif
 
 #ifdef FEATURE_CLOCK
@@ -2298,7 +2283,7 @@ void setup()
 
   // DL3LSM added for Teensy MIDI interface
   #if defined(HARDWARE_MIDI_TEENSY)
-    midi_setup();
+    teensyusbaudiomidi.setup();
   #endif
 }
 
@@ -2457,10 +2442,11 @@ void loop()
 
   // DL3LSM added for Teensy MIDI interface
   #if defined(HARDWARE_MIDI_TEENSY)
+    teensyusbaudiomidi.loop();
     // Read commands from input channel, callbacks are set up
-    while (usbMIDI.read(input_channel)) {
+    //while (usbMIDI.read(input_channel)) {
       // ignore incoming messages
-  }
+  //}
   #endif // defined(HARDWARE_MIDI_TEENSY)
   
 }
@@ -5721,14 +5707,14 @@ void ptt_key(){
           #if defined(FEATURE_WINKEY_EMULATION) && defined(OPTION_WINKEY_PINCONFIG_PTT_CONTROLS_PTT_LINE)
             if (winkey_pinconfig_ptt_bit){
               #if defined(HARDWARE_MIDI_TEENSY) // DL3LSM added for Teensy MIDI interface
-                midi_key_ptt(1);
+                teensyusbaudiomidi.ptt(1);
               #else
               digitalWrite (configuration.current_ptt_line, ptt_line_active_state);
               #endif
             }
           #else
             #if defined(HARDWARE_MIDI_TEENSY) // DL3LSM added for Teensy MIDI interface
-                midi_key_ptt(1);
+                teensyusbaudiomidi.ptt(1);
             #else
             digitalWrite (configuration.current_ptt_line, ptt_line_active_state);  
             #endif  
@@ -5748,14 +5734,14 @@ void ptt_key(){
           #if defined(FEATURE_WINKEY_EMULATION) && defined(OPTION_WINKEY_PINCONFIG_PTT_CONTROLS_PTT_LINE)
             if (winkey_pinconfig_ptt_bit){
               #if defined(HARDWARE_MIDI_TEENSY) // DL3LSM added for Teensy MIDI interface
-                midi_key_ptt(1);
+                teensyusbaudiomidi.ptt(1);
               #else
               digitalWrite (configuration.current_ptt_line, ptt_line_active_state);
               #endif
             }
           #else
             #if defined(HARDWARE_MIDI_TEENSY) // DL3LSM added for Teensy MIDI interface
-                midi_key_ptt(1);
+                teensyusbaudiomidi.ptt(1);
             #else
             digitalWrite (configuration.current_ptt_line, ptt_line_active_state);  
             #endif
@@ -5908,7 +5894,7 @@ void ptt_unkey(){
     #else
       if (configuration.current_ptt_line) {
         #if defined(HARDWARE_MIDI_TEENSY) // DL3LSM added for Teensy MIDI interface
-          midi_key_ptt(0);
+          teensyusbaudiomidi.ptt(0);
         #else
         digitalWrite (configuration.current_ptt_line, ptt_line_inactive_state);
         #endif
@@ -6681,7 +6667,7 @@ void tx_and_sidetone_key (int state)
         if (current_tx_key_line) {digitalWrite (current_tx_key_line, tx_key_line_active_state);}
         // DL3LSM added for Teensy MIDI interface
         #if defined(HARDWARE_MIDI_TEENSY)
-          midi_key_tx(1);
+          teensyusbaudiomidi.key(1);
         #endif
         #if defined(OPTION_WINKEY_2_SUPPORT) && defined(FEATURE_WINKEY_EMULATION) && !defined(FEATURE_SO2R_BASE)
           if ((wk2_both_tx_activated) && (tx_key_line_2)) {
@@ -6708,7 +6694,7 @@ void tx_and_sidetone_key (int state)
           if (current_tx_key_line) {digitalWrite (current_tx_key_line, tx_key_line_inactive_state);}
           // DL3LSM added for Teensy MIDI interface
           #if defined(HARDWARE_MIDI_TEENSY)
-            midi_key_tx(0);
+            teensyusbaudiomidi.key(0);
           #endif
           #if defined(OPTION_WINKEY_2_SUPPORT) && defined(FEATURE_WINKEY_EMULATION) && !defined(FEATURE_SO2R_BASE)
             if ((wk2_both_tx_activated) && (tx_key_line_2)) {
@@ -6739,7 +6725,7 @@ void tx_and_sidetone_key (int state)
         if (current_tx_key_line) {digitalWrite (current_tx_key_line, tx_key_line_active_state);}
         // DL3LSM added for Teensy MIDI interface
         #if defined(HARDWARE_MIDI_TEENSY)
-          midi_key_tx(1);
+          teensyusbaudiomidi.key(1);
         #endif
         #if defined(OPTION_WINKEY_2_SUPPORT) && defined(FEATURE_WINKEY_EMULATION) && !defined(FEATURE_SO2R_BASE)
           if ((wk2_both_tx_activated) && (tx_key_line_2)) {
@@ -6766,7 +6752,7 @@ void tx_and_sidetone_key (int state)
           if (current_tx_key_line) {digitalWrite (current_tx_key_line, tx_key_line_inactive_state);}
           // DL3LSM added for Teensy MIDI interface
           #if defined(HARDWARE_MIDI_TEENSY)
-            midi_key_tx(0);
+            teensyusbaudiomidi.key(0);
           #endif
           #if defined(OPTION_WINKEY_2_SUPPORT) && defined(FEATURE_WINKEY_EMULATION) && !defined(FEATURE_SO2R_BASE)
             if ((wk2_both_tx_activated) && (tx_key_line_2)) {
@@ -10268,7 +10254,7 @@ void winkey_unbuffered_speed_command(byte incoming_serial_byte) {
     
     // DL3LSM added for Teensy MIDI interface
     #if defined(HARDWARE_MIDI_TEENSY)
-      midi_send_wpm_response();
+      //midi_send_wpm_response();
     #endif // defined(HARDWARE_MIDI_TEENSY)
   }
 
@@ -22205,22 +22191,12 @@ void midi_setup() {
 
   // set callback for commands
   usbMIDI.setHandleControlChange(myControlChange);   
-
-  AudioMemory(16);
-
-  AudioNoInterrupts();
-
-  sine1.frequency(600);
-  sine1.amplitude(1.0);
-  sgtl5000_1.enable();
-  sgtl5000_1.volume(0.8);
-
-  AudioInterrupts();
+  teensyusbaudiomidi.setup();
 }
 
 void midi_key_tx(int state) {
 
-  teensyaudiotone.setTone(state);
+  //teensyaudiotone.setTone(state);
   if (state) {
     usbMIDI.sendNoteOn(base_note+1, 99, keyer_channel);
   } else {
@@ -22245,7 +22221,14 @@ void myControlChange(byte channel, byte control, byte value) {
   //delay(100);
   //usbMIDI.sendNoteOff(base_note+1, 0, keyer_channel);
   // end debug 
-  
+
+  primary_serial_port->print("ControlChange ");
+  primary_serial_port->print(channel);
+  primary_serial_port->print(" ");
+  primary_serial_port->print(control);
+  primary_serial_port->print(" ");
+  primary_serial_port->println(value);
+
   int ok = 1;
   
   if (channel != input_channel) {
@@ -22273,7 +22256,7 @@ void myControlChange(byte channel, byte control, byte value) {
       break;
     case wpm_control:
       speed_set(value);
-      winkey_port_write(((value - pot_wpm_low_value)|128),0);
+      //winkey_port_write(((value - pot_wpm_low_value)|128),0);
       break;
     case reverse_control:
       if (value > 0) {
