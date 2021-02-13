@@ -17,7 +17,7 @@
 // #define HARDWARE_FK_11 // Funtronics K3NG Keyer FK-11 - See notes below! https://www.elekitsorparts.com/?product=funtronics-k3ng-keyer-with-99-winkey-emulation files: keyer_pin_settings_fk_11.h, keyer_features_and_options_fk_11.h, keyer_settings_fk_11.h
 // #define HARDWARE_MAPLE_MINI  // edit these files: keyer_pin_settings_maple_mini.h, keyer_settings_maple_mini.h, keyer_features_and_options_maple_mini.h
 // #define HARDWARE_GENERIC_STM32F103C  // edit these files: keyer_pin_settings_generic_STM32F103C.h, keyer_settings_generic_STM32F103C.h, keyer_features_and_options_generic_STM32F103C.h //sp5iou 20180329
-#define HARDWARE_MIDI_TEENSY  // edit these files: keyer_pin_settings_midi_teensy.h, keyer_settings_midi_teensy.h, keyer_features_and_options_midi_teensy.h
+#define HARDWARE_TEENSY_USBAUDIOMIDI  // edit these files: keyer_pin_settings_teensy_usbaudiomidi.h, keyer_settings_teensy_usbaudiomidi.h, keyer_features_and_options_teensy_usbaudiomidi.h
 // #define HARDWARE_MORTTY  // edit these files: keyer_pin_settings_mortty.h, keyer_settings_mortty.h, keyer_features_and_options_mortty.h
 // #define HARDWARE_MORTTY_REGULAR  // edit these files: keyer_pin_settings_mortty_regular.h, keyer_settings_mortty_regular.h, keyer_features_and_options_mortty_regular.h
 // #define HARDWARE_MORTTY_REGULAR_WITH_POTENTIOMETER  // edit these files: keyer_pin_settings_mortty_regular_with_potentiometer.h, keyer_settings_mortty_regular_with_potentiometer.h, keyer_features_and_options_mortty_regular_with_potentiometer.h
@@ -95,3 +95,4 @@
   #define PRIMARY_SERIAL_CLS HardwareSerial
   #define SECONDARY_SERIAL_CLS HardwareSerial 
 #endif
+  

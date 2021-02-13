@@ -276,33 +276,3 @@
 #define sidetone_volume_high_limit 500
 
 #define custom_startup_field "your custom text here"   // an example could be callsign and name, eg. "AB1XYZ Bob", (or "Worlds best operator" which requires a 20 column display), string length shouldo be no more than the number of columns on the display
-
-// MIDI definitions
-#define keyer_channel 1      // the MIDI channel number to send messages
-#define base_note 0    // the base midi note
-
-// commands and queries from the computer
-#define input_channel 2 // the MIDI channel to receive commands as notes
-#define wpm_control 0      // note for WPM command, value is wpm value
-#define is_keyer_control 1    // set behavior as keyer or dumb interface: value > 0 -> Iambic Keyer, = 0 -> Interface
-#define reverse_control 2  // value > 0 -> Paddle Reverse
-#define iambic_control 3   // value > 0 -> Iambic B, = 0 -> Iambic A
-
-// 
-// query for keyer state
-// Resonses:
-//    response_is_keyer: value = 1 - yes, value 0 - no, value = 2 - Winkeyer (not in this Sketch)
-//  when keyer then more responses:
-//    response_wpm: value = wpm
-//    response_reverse: Paddle reverse: value > 0 - yes, value 0 - no
-//    response_iambic: Iambic Mode: value > 0 -> Iambic B, = 0 -> Iambic A
-#define get_keyer_state_control 4
-
-// responses to the computer
-#define response_channel 3      // the channel to send response messages
-#define response_fail 0
-#define response_ok 1
-#define response_is_keyer 2    // value = 1 - yes, value 0 - no, value = 2 - Winkeyer (not in this Sketch)
-#define response_wpm 3        // value = wpm
-#define response_reverse 4    // Paddle reverse: value > 0 - yes, value 0 - no
-#define response_iambic 5     // Iambic Mode: value > 0 -> Iambic B, = 0 -> Iambic A
