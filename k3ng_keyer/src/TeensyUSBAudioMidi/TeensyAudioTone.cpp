@@ -56,40 +56,19 @@ const int32_t window_table[WINDOW_TABLE_LENGTH] = {
 void TeensyAudioTone::update(void)
 {
     audio_block_t *block_sine, *block_inl, *block_inr;
-    audio_block_t *block_i2sl, *block_i2sr;
+    static audio_block_t *block_sidetone=NULL;
     int16_t i, t;
+
+    if (!block_sidetone) {
+       block_sidetone=allocate();
+       if (!block_sidetone) return;
+    }
 
     block_sine = receiveReadOnly(2);
     if (!block_sine) return;
-    block_i2sl = allocate();
-    if (!block_i2sl) {
-        release(block_sine);
-        return;
-    }
-    block_i2sr = allocate();
-    if (!block_i2sr) {
-        release(block_sine);
-        release(block_i2sl);
-        return;
-    }
 
     block_inl = receiveReadOnly(0);
-    if (!block_inl) {
-        release(block_sine);
-        release(block_i2sl);
-        release(block_i2sr);
-        return;
-    }
-
-
     block_inr = receiveReadOnly(1);
-    if (!block_inr) {
-        release(block_sine);
-        release(block_i2sl);
-        release(block_i2sr);
-        release(block_inl);
-        return;
-    }
 
     if (tone || windowindex) {
 
@@ -101,8 +80,7 @@ void TeensyAudioTone::update(void)
                 } else {
                     t = block_sine->data[i];
                 }
-                block_i2sl->data[i] = t;
-                block_i2sr->data[i] = t;
+                block_sidetone->data[i]=t;
             }
         } else {
             // Apply ramp down until 0 window index
@@ -114,26 +92,23 @@ void TeensyAudioTone::update(void)
                 } else {
                     t = 0;
                 }
-                block_i2sl->data[i] = t;
-                block_i2sr->data[i] = t;
+                block_sidetone->data[i] = t;
             }
         }
 
-        transmit(block_i2sl,0);
-        transmit(block_i2sr,1);
+        transmit(block_sidetone,0);
+        transmit(block_sidetone,1);
 
     } else {
 
         windowindex = 0;
-        transmit(block_inl,0);
-        transmit(block_inr,1);
+        if (block_inl) transmit(block_inl,0);
+        if (block_inr) transmit(block_inr,1);
     }
 
     release(block_sine);
-    release(block_i2sl);
-    release(block_i2sr);
-    release(block_inl);
-    release(block_inr);
+    if (block_inl) release(block_inl);
+    if (block_inr) release(block_inr);
 
 }
 
