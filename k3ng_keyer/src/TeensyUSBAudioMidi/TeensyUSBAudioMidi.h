@@ -33,7 +33,7 @@
 class TeensyUSBAudioMidi
 {
 public:
-    TeensyUSBAudioMidi(usb_serial_class *serial, usb_midi_class *midi) :
+    TeensyUSBAudioMidi() :
         usbaudioinput(),
         sine(),
         teensyaudiotone(),
@@ -43,11 +43,8 @@ public:
         patchwav (sine,            0, teensyaudiotone, 2),
         patchoutl(teensyaudiotone, 0, i2s,             0),
         patchoutr(teensyaudiotone, 1, i2s,             1),
-        sgtl5000() 
+        sgtl5000()
     {
-        serialp = serial;
-        midip = midi; 
-
     }
 
     void setup(void);
@@ -70,9 +67,6 @@ private:
     AudioConnection         patchoutl;
     AudioConnection         patchoutr;
     AudioControlSGTL5000    sgtl5000;
-
-    usb_serial_class        *serialp;
-    usb_midi_class          *midip;
 };
 
 #endif

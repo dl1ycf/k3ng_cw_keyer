@@ -2174,7 +2174,7 @@ unsigned long millis_rollover = 0;
 
 #include "src/TeensyUSBAudioMidi/TeensyUSBAudioMidi.h"
 
-TeensyUSBAudioMidi       teensyusbaudiomidi(primary_serial_port,&usbMIDI);
+TeensyUSBAudioMidi       teensyusbaudiomidi;
 
 #endif
 
