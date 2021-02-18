@@ -3073,15 +3073,10 @@ void service_keypad(){
       #endif //FEATURE_COMMAND_LINE_INTERFACE
     #endif //FEATURE_SERIAL
 
-  return(decode_character);
-
+    return(decode_character);
+  #else
+    return 0;  // This makes the compiler happy  
   #endif //FEATURE_STRAIGHT_KEY_DECODE
-
-
-  
-
-
-
 
   }
 #endif //FEATURE_STRAIGHT_KEY
@@ -10476,6 +10471,9 @@ void winkey_sidetone_freq_command(byte incoming_serial_byte) {
     case 9: configuration.hz_sidetone = WINKEY_SIDETONE_9; break;
     case 10: configuration.hz_sidetone = WINKEY_SIDETONE_10; break;
   }
+#ifdef HARDWARE_TEENSY_USBAUDIOMIDI
+   teensyusbaudiomidi.sidetonefrequency(configuration.hz_sidetone);
+#endif     
   #ifdef OPTION_WINKEY_STRICT_EEPROM_WRITES_MAY_WEAR_OUT_EEPROM
   config_dirty = 1;
   #endif
@@ -10735,6 +10733,10 @@ void winkey_admin_get_values_command() {
     case WINKEY_SIDETONE_10 : winkey_port_write(10,1); break;
     default: winkey_port_write(5,1); break;
   }
+#ifdef HARDWARE_TEENSY_USBAUDIOMIDI
+   teensyusbaudiomidi.sidetonefrequency(configuration.hz_sidetone);
+#endif     
+ 
 
   // 4 - weight
   winkey_port_write(configuration.weighting,1);
