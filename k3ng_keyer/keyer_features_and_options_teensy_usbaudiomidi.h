@@ -3,10 +3,10 @@
 
 
 // #define FEATURE_COMMAND_BUTTONS
-#define FEATURE_COMMAND_LINE_INTERFACE  // Command Line Interface functionality
+// #define FEATURE_COMMAND_LINE_INTERFACE  // Command Line Interface functionality
 // #define FEATURE_MEMORIES             // on the Arduino Due, you must have FEATURE_EEPROM_E24C1024 and E24C1024 EEPROM hardware in order to compile this
 // #define FEATURE_MEMORY_MACROS
-///#define FEATURE_WINKEY_EMULATION    // disabling Automatic Software Reset is highly recommended (see documentation)
+#define FEATURE_WINKEY_EMULATION    // disabling Automatic Software Reset is highly recommended (see documentation)
 // #define FEATURE_BEACON
 // #define FEATURE_TRAINING_COMMAND_LINE_INTERFACE
 // #define FEATURE_POTENTIOMETER         // do not enable unless you have a potentiometer connected, otherwise noise will falsely trigger wpm changes
@@ -42,7 +42,7 @@
 // #define FEATURE_PTT_INTERLOCK 
 // #define FEATURE_QLF
 // #define FEATURE_EEPROM_E24C1024
-// #define FEATURE_STRAIGHT_KEY
+#define FEATURE_STRAIGHT_KEY
 // #define FEATURE_DYNAMIC_DAH_TO_DIT_RATIO
 // #define FEATURE_PADDLE_ECHO         // you may also need to comment out line 19 in the file keyer_dependencies.h
 // #define FEATURE_STRAIGHT_KEY_ECHO
@@ -57,13 +57,13 @@
                                                              //    hold command button down at boot up to activate CLI mode
 
 // #define OPTION_SUPPRESS_SERIAL_BOOT_MSG
-#define OPTION_INCLUDE_PTT_TAIL_FOR_MANUAL_SENDING
-#define OPTION_EXCLUDE_PTT_HANG_TIME_FOR_MANUAL_SENDING
+// #define OPTION_INCLUDE_PTT_TAIL_FOR_MANUAL_SENDING
+// #define OPTION_EXCLUDE_PTT_HANG_TIME_FOR_MANUAL_SENDING
 ///#define OPTION_WINKEY_DISCARD_BYTES_AT_STARTUP     // if ASR is not disabled, you may need this to discard errant serial port bytes at startup
 // #define OPTION_WINKEY_STRICT_EEPROM_WRITES_MAY_WEAR_OUT_EEPROM // with this activated the unit will write non-volatile settings to EEPROM when set by Winkey commands
 // #define OPTION_WINKEY_SEND_WORDSPACE_AT_END_OF_BUFFER
 ///#define OPTION_WINKEY_STRICT_HOST_OPEN               // require an admin host open Winkey command before doing any other commands
-///#define OPTION_WINKEY_2_SUPPORT                      // comment out to revert to Winkey version 1 emulation
+#define OPTION_WINKEY_2_SUPPORT                      // comment out to revert to Winkey version 1 emulation
 ///#define OPTION_WINKEY_INTERRUPTS_MEMORY_REPEAT
 //#define OPTION_WINKEY_UCXLOG_9600_BAUD              // use this only with UCXLog configured for Winkey 9600 baud mode
 ///#define OPTION_WINKEY_2_HOST_CLOSE_NO_SERIAL_PORT_RESET  // (Required for Win-Test to function)
@@ -85,7 +85,7 @@
 // #define OPTION_PS2_NON_ENGLISH_CHAR_LCD_DISPLAY_SUPPORT // makes some non-English characters from the PS2 keyboard display correctly in the LCD display (donated by Marcin sp5iou)
 // #define OPTION_PS2_KEYBOARD_RESET // reset the PS2 keyboard upon startup with 0xFF (contributed by Bill, W9BEL)
 // #define OPTION_SAVE_MEMORY_NANOKEYER
-#define OPTION_CW_KEYBOARD_CAPSLOCK_BEEP
+// #define OPTION_CW_KEYBOARD_CAPSLOCK_BEEP
 // #define OPTION_CW_KEYBOARD_ITALIAN
 // #define OPTION_CW_KEYBOARD_GERMAN
 // #define OPTION_CW_DECODER_GOERTZEL_AUDIO_DETECTOR
@@ -93,7 +93,7 @@
 // #define OPTION_ADVANCED_SPEED_DISPLAY //enables "nerd" speed visualization on display: wpm, cpm (char per min), duration of dit and dah in milliseconds and ratio (contributed by Giorgio, IZ2XBZ)
 // #define OPTION_PROSIGN_SUPPORT    // additional prosign support for paddle and straight key echo on display, CLI, and in memory storage
 // #define OPTION_RUSSIAN_LANGUAGE_SEND_CLI // Russian language CLI sending support (contributed by Павел Бирюков, UA1AQC)
-#define OPTION_DO_NOT_SEND_UNKNOWN_CHAR_QUESTION
+// #define OPTION_DO_NOT_SEND_UNKNOWN_CHAR_QUESTION
 // #define OPTION_CMOS_SUPER_KEYER_IAMBIC_B_TIMING_ON_BY_DEFAULT
 // #define OPTION_SIDETONE_DIGITAL_OUTPUT_NO_SQUARE_WAVE
 // #define FEATURE_SD_CARD_SUPPORT
