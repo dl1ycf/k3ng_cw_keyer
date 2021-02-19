@@ -23,17 +23,18 @@
 #include <Arduino.h>
 #include "TeensyUSBAudioMidi.h"
 #include "utility/dspinst.h"
-#include "../../keyer_settings_teensy_usbaudiomidi.h"
 
 void TeensyUSBAudioMidi::setup(void)
 {
     AudioMemory(16);
     AudioNoInterrupts();
 
-    sine.frequency(600);
-    sine.amplitude(1.0);
+    sine.frequency(OPTION_SIDETONE_FREQ);
+    sine.amplitude(OPTION_SIDETONE_VOLUME);
+#ifndef OPTION_AUDIO_MQS    
     sgtl5000.enable();
     sgtl5000.volume(0.8);
+#endif    
 
     AudioInterrupts();
 
@@ -44,9 +45,14 @@ void TeensyUSBAudioMidi::loop(void)
     uint cmd, data;
     static uint lsb_data = 0;
 
-    // Expect connection on channel 2
-    while (usbMIDI.read(2)) {
-        if (usbMIDI.getType() == usbMIDI.ControlChange) {
+    //
+    // "swallow" incoming MIDI messages on ANY channel,
+    // but only process those on MIDI_CONTROL_CHANNEL.
+    // This is to prevent overflows if MIDI messages are
+    // sent on the "wrong" channel.
+    //
+    while (usbMIDI.read()) {
+        if (usbMIDI.getType() == usbMIDI.ControlChange && usbMIDI.getChannel() == OPTION_MIDI_CONTROL_CHANNEL) {
             cmd  = usbMIDI.getData1();
             data = usbMIDI.getData2();
 
@@ -85,15 +91,17 @@ void TeensyUSBAudioMidi::loop(void)
                     break;
 
                 case 16 :
-                    // Set i2s volume, multi transfer
+                    // Set audio output  volume, multi transfer
                     lsb_data = (data << 7) | lsb_data;
+#ifndef OPTION_AUDIO_MQS                    
                     sgtl5000.volume(float(lsb_data)/16384.0);
+#endif                    
                     break;
 
                 default :
-                    Serial.print("Unrecognized MIDI command ");
-                    Serial.println(cmd);
-
+                    //Serial.print("Unrecognized MIDI command ");
+                    //Serial.println(cmd);
+                    break;
             }
         }
     }
@@ -103,15 +111,40 @@ void TeensyUSBAudioMidi::key(int state)
 {
     teensyaudiotone.setTone(state);
     if (state) {
-        usbMIDI.sendNoteOn(1, 99, 1);
+        usbMIDI.sendNoteOn(OPTION_MIDI_CW_NOTE, 99, OPTION_MIDI_CW_CHANNEL);
     } else {
-        usbMIDI.sendNoteOff(1, 0, 1);
+        usbMIDI.sendNoteOff(OPTION_MIDI_CW_NOTE, 0, OPTION_MIDI_CW_CHANNEL);
     }
+    // These messages are time-critical so flush buffer
+    usbMIDI.send_now();
 }
 
 void TeensyUSBAudioMidi::ptt(int state)
 {
-    ;
+#ifdef OPTION_MIDI_PTT_NOTE
+    if (state) {
+        usbMIDI.sendNoteOn(OPTION_MIDI_PTT_NOTE, 127, OPTION_MIDI_CW_CHANNEL);
+    } else {
+        usbMIDI.sendNoteOff(OPTION_MIDI_PTT_NOTE, 0, OPTION_MIDI_CW_CHANNEL);
+    }
+    // These messages are time-critical so flush buffer
+    usbMIDI.send_now();
+#endif
 }
 
+void TeensyUSBAudioMidi::sidetonevolume(int level) 
+{
+  //
+  // level is the analog value (0-1023) produced by the volume pot.
+  // it is converted to the range 0-20 and then the amplitude is
+  // taken from VolTab
+  //
+  if (level <  0) level=0;
+  if (level > 20) level=20;
+  sine.amplitude(VolTab[level]);
+}
 
+void TeensyUSBAudioMidi::sidetonefrequency(int freq) 
+{
+    sine.frequency(freq);
+}

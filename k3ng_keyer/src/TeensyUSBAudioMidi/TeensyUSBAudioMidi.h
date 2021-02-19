@@ -29,6 +29,26 @@
 #include "arm_math.h"
 #include "TeensyAudioTone.h"
 
+#include "../../keyer_features_and_options_teensy_usbaudiomidi.h"
+
+//
+// Set defaults
+//
+#ifndef OPTION_MIDI_CW_NOTE
+#define OPTION_MIDI_CW_NOTE 1
+#endif
+#ifndef OPTION_MIDI_CW_CHANNEL
+#define OPTION_MIDI_CW_CHANNEL 1   // use channel 1 as default
+#endif
+#ifndef OPTION_MIDI_CONTROL_CHANNEL
+#define OPTION_MIDI_CONTROL_CHANNEL 2  // use channel 2 by default
+#endif
+#ifndef OPTION_SIDETONE_VOLUME
+#define OPTION_SIDETONE_VOLUME 0.2
+#endif
+#ifndef OPTION_SIDETONE_FREQ
+#define OPTION_SIDETONE_FREQ  600
+#endif
 
 class TeensyUSBAudioMidi
 {
@@ -37,36 +57,49 @@ public:
         usbaudioinput(),
         sine(),
         teensyaudiotone(),
-        i2s(),
+        audioout(),
+#ifndef OPTION_AUDIO_MQS
+        sgtl5000(),
+#endif                
         patchinl (usbaudioinput,   0, teensyaudiotone, 0),
         patchinr (usbaudioinput,   1, teensyaudiotone, 1),
         patchwav (sine,            0, teensyaudiotone, 2),
-        patchoutl(teensyaudiotone, 0, i2s,             0),
-        patchoutr(teensyaudiotone, 1, i2s,             1),
-        sgtl5000()
+        patchoutl(teensyaudiotone, 0, audioout,        0),
+        patchoutr(teensyaudiotone, 1, audioout,        1)
     {
     }
 
-    void setup(void);
-
-    void loop(void);
-
-    void key(int state);
-
-    void ptt(int state);
+    void setup(void);                     // to be executed once upon startup
+    void loop(void);                      // to be executed at each heart beat
+    void key(int state);                  // CW Key up/down event
+    void ptt(int state);                  // PTT open/close event
+    void sidetonevolume(int level);       // Change side tone volume
+    void sidetonefrequency(int freq);     // Change side tone frequency
 
 
 private:
     AudioInputUSB           usbaudioinput;
     AudioSynthWaveformSine  sine;
     TeensyAudioTone         teensyaudiotone;
-    AudioOutputI2S          i2s;
+#ifdef OPTION_AUDIO_MQS
+    AudioOutputMQS          audioout;
+#else
+    AudioOutputI2S          audioout;
+    AudioControlSGTL5000    sgtl5000;
+#endif
     AudioConnection         patchinl;
     AudioConnection         patchinr;
     AudioConnection         patchwav;
     AudioConnection         patchoutl;
     AudioConnection         patchoutr;
-    AudioControlSGTL5000    sgtl5000;
+
+    //
+    // Side tone level (amplitude), in 20 steps from zero to one, about 2 dB per step
+    // This is used to convert the value from the (linear) volume pot to an amplitude level
+    //
+    float VolTab[21]={0.000,0.0126,0.0158,0.0200,0.0251,0.0316,0.0398,0.0501,0.0631,0.0794,
+                      0.100,0.1258,0.1585,0.1995,0.2511,0.3162,0.3981,0.5012,0.6309,0.7943,1.0000};
+    
 };
 
 #endif
