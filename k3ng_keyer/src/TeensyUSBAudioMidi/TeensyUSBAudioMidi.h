@@ -80,7 +80,7 @@ public:
 private:
     AudioInputUSB           usbaudioinput;
     AudioSynthWaveformSine  sine;
-	    TeensyAudioTone         teensyaudiotone;
+    TeensyAudioTone         teensyaudiotone;
 #ifdef OPTION_AUDIO_MQS
     AudioOutputMQS          audioout;
 #else
