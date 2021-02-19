@@ -8543,6 +8543,9 @@ void command_tuning_mode() {
     if (((configuration.hz_sidetone + hz) > sidetone_hz_limit_low) && ((configuration.hz_sidetone + hz) < sidetone_hz_limit_high)) {
       configuration.hz_sidetone = configuration.hz_sidetone + hz;
       config_dirty = 1;
+#ifdef HARDWARE_TEENSY_USBAUDIOMIDI
+   teensyusbaudiomidi.sidetonefrequency(configuration.hz_sidetone);
+#endif
       #if defined(FEATURE_DISPLAY) && defined(OPTION_MORE_DISPLAY_MSGS)
         if (LCD_COLUMNS < 9){
           lcd_center_print_timed(String(configuration.hz_sidetone) + " Hz", 0, default_display_msg_delay);
@@ -13857,6 +13860,9 @@ void serial_set_sidetone_freq(PRIMARY_SERIAL_CLS * port_to_use) {
     port_to_use->println(F(" hz"));
     configuration.hz_sidetone = set_sidetone_hz;
     config_dirty = 1;
+#ifdef HARDWARE_TEENSY_USBAUDIOMIDI
+   teensyusbaudiomidi.sidetonefrequency(configuration.hz_sidetone);
+#endif
     #ifdef FEATURE_DISPLAY
       if (LCD_COLUMNS < 9) lcd_center_print_timed(String(configuration.hz_sidetone) + " Hz", 0, default_display_msg_delay);
       else lcd_center_print_timed("Sidetone " + String(configuration.hz_sidetone) + " Hz", 0, default_display_msg_delay);
@@ -16689,6 +16695,9 @@ byte play_memory(byte memory_number) {
                 }
                 if ((input_error != 1) && (int_from_macro > sidetone_hz_limit_low) && (int_from_macro < sidetone_hz_limit_high)) {
                   configuration.hz_sidetone = int_from_macro;
+#ifdef HARDWARE_TEENSY_USBAUDIOMIDI
+   teensyusbaudiomidi.sidetonefrequency(configuration.hz_sidetone);
+#endif
                   #ifdef FEATURE_DISPLAY
                     if (LCD_COLUMNS < 9) lcd_center_print_timed(String(configuration.hz_sidetone) + " Hz", 0, default_display_msg_delay);
                     else lcd_center_print_timed("Sidetone " + String(configuration.hz_sidetone) + " Hz", 0, default_display_msg_delay);
@@ -16698,6 +16707,9 @@ byte play_memory(byte memory_number) {
 	        if ((input_error != 1) && (int_from_macro > sidetone_hz_limit_low) && (int_from_macro < sidetone_hz_limit_high)) {
                   configuration.hz_sidetone = int_from_macro;
                 }
+#ifdef HARDWARE_TEENSY_USBAUDIOMIDI
+   teensyusbaudiomidi.sidetonefrequency(configuration.hz_sidetone);
+#endif
                 break;
 
               case 'H':                       // H - Switch to Hell
@@ -17821,6 +17833,10 @@ void initialize_keyer_state(){
       memory_area_end = 1024; // not sure if this is a valid assumption
     #endif  
   #endif
+
+#ifdef HARDWARE_TEENSY_USBAUDIOMIDI
+   teensyusbaudiomidi.sidetonefrequency(configuration.hz_sidetone);
+#endif
 
 }  
 
@@ -20425,6 +20441,9 @@ void web_print_page_keyer_settings_process(EthernetClient client){
       qrss_dit_length = temp_qrss_dit_length;
       configuration.sidetone_mode = temp_sidetone_mode;
       configuration.hz_sidetone = temp_sidetone_hz;
+#ifdef HARDWARE_TEENSY_USBAUDIOMIDI
+   teensyusbaudiomidi.sidetonefrequency(configuration.hz_sidetone);
+#endif
       temp_string_dit_dah_ratio.replace(".","");
       configuration.dah_to_dit_ratio =  temp_string_dit_dah_ratio.toInt();
       configuration.weighting = temp_weight;
