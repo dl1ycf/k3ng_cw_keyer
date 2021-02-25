@@ -125,54 +125,48 @@ const int32_t window_table[WINDOW_TABLE_LENGTH] = {
    2147136739,   2147255917,   2147340850,   2147399228,   2147437451,   2147460844,   2147473870,   2147480343
 };
 
-
 void TeensyAudioTone::update(void)
 {
     audio_block_t *block_sine, *block_inl, *block_inr;
-    //
-    // static allocation of the output buffer
-    // instead of allocating/releasing again and again.
-    // Although we operate stereo, the left and right samples
-    // of the side tone are the same, so one block is OK.
-    //
-    static audio_block_t block_sidetone;
+    audio_block_t *block_sidetone;
     int16_t i, t;
 
+
+    block_inl  = receiveReadOnly(0);
+    block_inr  = receiveReadOnly(1);
     block_sine = receiveReadOnly(2);
-    if (!block_sine) return;
 
-    block_inl = receiveReadOnly(0);
-    block_inr = receiveReadOnly(1);
+    if ((tone || windowindex) && block_sine) {
 
-    if (tone || windowindex) {
-
-        if (tone) {
-            // Apply ramp up window and/or send tone to both outputs
-            for (i = 0; i < AUDIO_BLOCK_SAMPLES; i++) {
-                if (windowindex < WINDOW_TABLE_LENGTH) {
-                    t = multiply_32x32_rshift32( (block_sine->data[i]) << 1, window_table[windowindex++]);
-                } else {
-                    t = block_sine->data[i];
+        block_sidetone=allocate();
+        if (block_sidetone) {
+            if (tone) {
+                // Apply ramp up window and/or send tone to both outputs
+                for (i = 0; i < AUDIO_BLOCK_SAMPLES; i++) {
+                    if (windowindex < WINDOW_TABLE_LENGTH) {
+                        t = multiply_32x32_rshift32(block_sine->data[i] << 1, window_table[windowindex++]);
+                    } else {
+                        t = block_sine->data[i];
+                    }
+                    block_sidetone->data[i]=t;
                 }
-                block_sidetone.data[i]=t;
-            }
-        } else {
-            // Apply ramp down until 0 window index
-            if (windowindex > WINDOW_TABLE_LENGTH) windowindex = WINDOW_TABLE_LENGTH;
-
-            for (i = 0; i < AUDIO_BLOCK_SAMPLES; i++) {
-                if (windowindex) {
-                    t = multiply_32x32_rshift32( (block_sine->data[i]) << 1, window_table[--windowindex]);
-                } else {
-                    t = 0;
+            } else {
+                // Apply ramp down until 0 window index
+                if (windowindex > WINDOW_TABLE_LENGTH) windowindex = WINDOW_TABLE_LENGTH;
+                for (i = 0; i < AUDIO_BLOCK_SAMPLES; i++) {
+                    if (windowindex) {
+                        t = multiply_32x32_rshift32(block_sine->data[i] << 1, window_table[--windowindex]);
+                    } else {
+                        t = 0;
+                    }
+                    block_sidetone->data[i] = t;
                 }
-                block_sidetone.data[i] = t;
             }
+            // Use same data for both ears
+            transmit(block_sidetone,0);
+            transmit(block_sidetone,1);
+            release(block_sidetone);
         }
-
-        // Use same data for both ears
-        transmit(&block_sidetone,0);
-        transmit(&block_sidetone,1);
 
     } else {
 
@@ -181,13 +175,11 @@ void TeensyAudioTone::update(void)
         if (block_inr) transmit(block_inr,1);
     }
 
-    release(block_sine);
-    if (block_inl) release(block_inl);
-    if (block_inr) release(block_inr);
+    if (block_sine) release(block_sine);
+    if (block_inl)  release(block_inl);
+    if (block_inr)  release(block_inr);
 
 }
 
 
 #undef WINDOW_TABLE_LENGTH
-
-

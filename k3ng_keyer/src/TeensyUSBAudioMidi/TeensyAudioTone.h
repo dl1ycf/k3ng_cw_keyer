@@ -61,11 +61,10 @@ private:
     }
     audio_block_t *inputQueueArray[3];
 
-    uint8_t tone;
+    uint8_t tone;         // tone on/off flag
 
     uint16_t hangtime;
-
-    uint8_t windowindex;
+    uint8_t windowindex;  // pointer into the "ramp"
 };
 
 #undef SAMPLES_PER_MSEC
