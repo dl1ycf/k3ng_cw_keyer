@@ -22,7 +22,6 @@
 
 #include <Arduino.h>
 #include "TeensyUSBAudioMidi.h"
-#include "utility/dspinst.h"
 
 void TeensyUSBAudioMidi::setup(void)
 {
@@ -146,5 +145,5 @@ void TeensyUSBAudioMidi::sidetonevolume(int level)
 
 void TeensyUSBAudioMidi::sidetonefrequency(int freq) 
 {
-    sine.frequency(freq);
+    sine.frequency((float)freq);
 }
