@@ -11,16 +11,16 @@ A [Teensy 4](https://www.pjrc.com/store/teensy40.html) and [Teensy 4 Audio Shiel
 The first step is to connect the Teensy 4 to the Audio Shield while keeping access to other Teensy 4 pins for the CW key. There are several ways to do this as seen below.
 
 You can solder the Teensy 4 directly to the Audio Shield while leaving some pins extruding for later connection to the CW key.
-[DL1YCF](./pictures/dl1ycf.jpg)
+![DL1YCF](./pictures/dl1ycf.jpg)
 
 You can use "stacking headers and sockets" to mate the Teensy 4 with the Audio Shield. The long pins from the socket then allow you to plug into a breadboard.
-[](./pictures/Shield_Top.jpg)
-[](./pictures/Shield_Under.jpg)
-[](./pictures/Plugged_together.jpg)
+![](./pictures/Shield_Top.jpg)
+![](./pictures/Shield_Under.jpg)
+![](./pictures/Plugged_together.jpg)
 
 Not all pins must connect the Teensy 4 with the Audio Shield. You can pick and choose where to use headers and sockets. Some of the header pins can go up or down. Both ground pins, 3.3V and pins 7,8,18,19,20,21,23 must connect. See the section "Signals to Teensy" on [this page](https://www.pjrc.com/store/teensy3_audio.html) for more details. Note that the data storage and thumbwheel pins are optional.
-[](./pictures/teensy4.jpg)
-[](./pictures/audioshield.jpg)
+![](./pictures/teensy4.jpg)
+![](./pictures/audioshield.jpg)
 
 ### Connect Teensy 4 to a Key
 
