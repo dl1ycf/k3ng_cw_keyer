@@ -1,4 +1,4 @@
-# K3NG Arduino CW Keyer for Teensy 4 and Hermes-Lite 2.0
+# K3NG Arduino CW Keyer for Teensy 4 and Hermes-Lite
 
 This is a fork of the K3NG CW keyer which runs on a [Teensy 4](https://www.pjrc.com/teensy/). The keyer is also a USB audio device. This allows for low latency CW sidetone to be mixed in with received audio from a [Hermes-Lite 2.0](http://www.hermeslite.com/) amateur softwareware defined radio or other radio. This project is currently a DIY project with instructions below for those who feel comfortable with some light soldering and Arduino programming.
 
@@ -11,7 +11,7 @@ A [Teensy 4](https://www.pjrc.com/store/teensy40.html) and [Teensy 4 Audio Shiel
 The first step is to connect the Teensy 4 to the Audio Shield while keeping access to other Teensy 4 pins for the CW key. There are several ways to do this as seen below.
 
 You can solder the Teensy 4 directly to the Audio Shield while leaving some pins extruding for later connection to the CW key.
-[](./pictures/dl1ycf.jpg)
+[DL1YCF](./pictures/dl1ycf.jpg)
 
 You can use "stacking headers and sockets" to mate the Teensy 4 with the Audio Shield. The long pins from the socket then allow you to plug into a breadboard.
 [](./pictures/Shield_Top.jpg)
