@@ -13120,7 +13120,7 @@ void sd_card_clear_log_file(PRIMARY_SERIAL_CLS * port_to_use,String filename) {
   sd_card_log_state = SD_CARD_LOG_NOT_OPEN;
   if (!sdfile){
     port_to_use->println(F("Unable to open file "));
-    sd_card_state = SD_CARD_ERROR;
+    sd_card_state = SD_CARD_ERROR_K3NG;
     sd_card_log_state = SD_CARD_LOG_ERROR;
   }
   sdlogfile.close();
@@ -21733,7 +21733,7 @@ void service_sd_card(){
     if (sdfile){
       sd_card_state = SD_CARD_AVAILABLE_BEACON_FILE_RUNNING;
     } else {
-      sd_card_state = SD_CARD_ERROR;
+      sd_card_state = SD_CARD_ERROR_K3NG;
     }
   }
 
