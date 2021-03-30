@@ -50,7 +50,7 @@ The Teensy 4 is programmed via a usb connection to a host computer. Precompiled 
 
  * TBD: Link to latest TeensyWinkeyEmulator .hex
  * TBD: Link to latest hasek .hex
- * TBD: Link to latest k3ng .hex
+ * [k3ng with USB audio .hex](./releases/k3ng_keyer_teensyusbaudio_20210328.hex)
 
 Finally, complete the instructions for your operating systems but use the downloaded .hex file from above instead of the example .hex file. 
 
