@@ -48,9 +48,9 @@ When connecting your paddle or straight key to the Teensy 4, closing the paddle 
 
 The Teensy 4 is programmed via a usb connection to a host computer. Precompiled Teensy 4 firmware (.hex) files are available for download. First, download and install the Teensy loader application for your operating system as described on [this page](https://www.pjrc.com/teensy/loader.html). Next, download the latest target firmware:
 
- * TBD: Link to latest TeensyWinkeyEmulator .hex
- * TBD: Link to latest hasek .hex
- * [k3ng with USB audio .hex](./releases/k3ng_keyer_teensyusbaudio_20210328.hex)
+ * [TeensyWinkeyEmulator .hex](./releases/TeensyWinkeyerEmulator_20210418.hex)
+ * [hasak .hex](./releases/hasak_20210418.hex)
+ * [k3ng with USB audio .hex](./releases/k3ng_keyer_teensyusbaudio_20210418.hex)
 
 Finally, complete the instructions for your operating systems but use the downloaded .hex file from above instead of the example .hex file. 
 

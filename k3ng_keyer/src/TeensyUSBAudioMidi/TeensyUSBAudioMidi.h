@@ -35,7 +35,7 @@
 // Set defaults
 //
 #ifndef OPTION_MIDI_CW_NOTE
-#define OPTION_MIDI_CW_NOTE 1
+#define OPTION_MIDI_CW_NOTE 127
 #endif
 #ifndef OPTION_MIDI_CW_CHANNEL
 #define OPTION_MIDI_CW_CHANNEL 1   // use channel 1 as default
