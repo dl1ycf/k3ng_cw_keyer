@@ -1323,6 +1323,13 @@ Recent Update History
       Added Q command to FEATURE_COMMAND_MODE: Adjust keying compensation (left paddle = increase, right paddle = decrease)
       FEATURE_COMMAND_LINE_INTERFACE \:comp command now displays warning if keying compensation setting is probably too high
 
+    2021.03.10.01
+      Merged Pull Request 108 https://github.com/k3ng/k3ng_cw_keyer/pull/108 from VK2EFL
+        Adds to the \S CLI listing a display of the current tx's lead and tail times, plus the hang time (in wordspace units) plus the memory repeat time.
+      Merged Pull Request 109 https://github.com/k3ng/k3ng_cw_keyer/pull/109 from VK2EFL
+        Adds the option of a memory repeat time between repeated playing of memory 1 when in beacon mode.
+        Adds the option of having the PTT tail time added to the PTT at the end of each playing of memory 1 when in beacon mode.
+
   Documentation: https://github.com/k3ng/k3ng_cw_keyer/wiki
 
   Support: https://groups.io/g/radioartisan  ( Please do not email K3NG directly for support.  Thanks )
@@ -1350,7 +1357,7 @@ If you offer a hardware kit using this software, show your appreciation by sendi
 
 */
 
-#define CODE_VERSION "2021.01.25.01"
+#define CODE_VERSION "2021.03.10.01"
 #define eeprom_magic_number 41               // you can change this number to have the unit re-initialize EEPROM
 
 #include <stdio.h>
@@ -2298,24 +2305,39 @@ void loop()
     wdt_reset();
   #endif  //OPTION_WATCHDOG_TIMER
   
-  #if defined(FEATURE_BEACON) && defined(FEATURE_MEMORIES)  // paddle_left pin LOW at boot up beacon mode
+  #if defined(FEATURE_BEACON) && defined(FEATURE_MEMORIES)
     if (keyer_machine_mode == BEACON) {
-      delay(201);
-      while (keyer_machine_mode == BEACON) {  // if we're in beacon mode, just keep playing memory 1
+      delay(201);                                                                   // an odd duration delay before we enter BEACON mode
+      #ifdef OPTION_BEACON_MODE_MEMORY_REPEAT_TIME
+        unsigned int time_to_delay = configuration.memory_repeat_time - configuration.ptt_tail_time[configuration.current_tx - 1];
+      #endif                                                                        // OPTION_BEACON_MODE_MEMORY_REPEAT_TIME
+
+      while (keyer_machine_mode == BEACON) {                                        // if we're in beacon mode, just keep playing memory 1
         if (!send_buffer_bytes) {
           add_to_send_buffer(SERIAL_SEND_BUFFER_MEMORY_NUMBER);
           add_to_send_buffer(0);
         }
         service_send_buffer(PRINTCHAR);
+        #ifdef OPTION_BEACON_MODE_PTT_TAIL_TIME
+          delay(configuration.ptt_tail_time[configuration.current_tx - 1]);         // after memory 1 has played, this holds the PTT line active for the ptt tail time of the current tx
+          check_ptt_tail();                                                         // this resets things so that the ptt line will go high during the next playout
+          digitalWrite (configuration.current_ptt_line, ptt_line_inactive_state);   // forces the ptt line of the current tx to be inactive
+        #endif                                                                      // OPTION_BEACON_MODE_PTT_TAIL_TIME
+
         #ifdef FEATURE_SERIAL
           check_serial();
         #endif
+
         #ifdef OPTION_WATCHDOG_TIMER
           wdt_reset();
-        #endif  //OPTION_WATCHDOG_TIMER      
-      }
-    }
-  #endif //defined(FEATURE_BEACON) && defined(FEATURE_MEMORIES)
+        #endif                                                                      // OPTION_WATCHDOG_TIMER
+
+        #ifdef OPTION_BEACON_MODE_MEMORY_REPEAT_TIME
+          if (time_to_delay > 0) delay(time_to_delay);                              // this provdes a delay between succesive playouts of the memory contents
+        #endif                                                                      // OPTION_BEACON_MODE_MEMORY_REPEAT_TIME
+      }                                                                             // end while (keyer_machine_mode == BEACON)
+    }                                                                               // end if (keyer_machine_mode == BEACON)
+  #endif                                                                            // defined(FEATURE_BEACON) && defined(FEATURE_MEMORIES)
 
   #if defined(FEATURE_BEACON_SETTING)
     service_beacon();
@@ -13098,7 +13120,7 @@ void sd_card_clear_log_file(PRIMARY_SERIAL_CLS * port_to_use,String filename) {
   sd_card_log_state = SD_CARD_LOG_NOT_OPEN;
   if (!sdfile){
     port_to_use->println(F("Unable to open file "));
-    sd_card_state = SD_CARD_ERROR;
+    sd_card_state = SD_CARD_ERROR_K3NG;
     sd_card_log_state = SD_CARD_LOG_ERROR;
   }
   sdlogfile.close();
@@ -15712,7 +15734,20 @@ void serial_status(PRIMARY_SERIAL_CLS * port_to_use) {
     }  
   #endif
 
+  port_to_use->print(F("Tx"));                                                  // show the ptt lead time for the current tx
+  port_to_use->print(configuration.current_tx);
+  port_to_use->print(F(" lead time: "));
+  port_to_use->println(configuration.ptt_lead_time[configuration.current_tx - 1]);
+  port_to_use->print(F("Tx"));                                                  // show the ptt tail time for the current tx
+  port_to_use->print(configuration.current_tx);
+  port_to_use->print(F(" tail time: "));
+  port_to_use->println(configuration.ptt_tail_time[configuration.current_tx - 1]);
 
+  port_to_use->print(F("PTT hang time: "));                                     // show the hang time
+  port_to_use->print(ptt_hang_time_wordspace_units);
+  port_to_use->println(F(" wordspace units"));
+  port_to_use->print(F("Memory repeat time: "));                                // show the memory repeat time
+  port_to_use->println(configuration.memory_repeat_time);
 
   #ifdef FEATURE_MEMORIES
     serial_status_memories(port_to_use);
@@ -21698,7 +21733,7 @@ void service_sd_card(){
     if (sdfile){
       sd_card_state = SD_CARD_AVAILABLE_BEACON_FILE_RUNNING;
     } else {
-      sd_card_state = SD_CARD_ERROR;
+      sd_card_state = SD_CARD_ERROR_K3NG;
     }
   }
 
