@@ -2,93 +2,30 @@
 #ifndef keyer_pin_settings_h
 #define keyer_pin_settings_h
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//                                  Teensy-3,4 Audio Shield
-//                                  =======================
-//
-// When using the AudioShield audio output, a lot of Teensy pins
-// are "consumed" for the connection of the Shield. Those still "free" are
-//
-// Teensy 3: Digital Pins 0,1,2,3,4,5,8,20,21       Analog pins A2, A3
-// Teensy 4: Digital Pins 0,1,2,3,4,5,9,14,22       Analog pins A2, A3
-//
-// If analog pins are not needed, digital pin 16 (17) can be used instead of A2 (A3)
-//
-// There are some "additional pins" at the Teensy back side, but it should be clear that
-// the use of additional FEATURES is somewhat restricted by I/O pin shortage.
-//
-// Below we define Digital Input  Pins 0,1,2    (paddle, straight key)
-//                 Digital Output Pins 4,5,     (CW, PTT)
-//                 Analog  Input  Pins A2, A3   (speed pot, analog push-button input)
-//
-//
-// Such that it should not need modification for Teensy 3 and 4.
-//
-////////////////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Input lines: Paddle, Straight key, speed pot, analog push-button
-//
-////////////////////////////////////////////////////////////////////////////////////////////
-#define paddle_left			1
-#define paddle_right			0
-#ifdef FEATURE_STRAIGHT_KY
-  #define pin_straight_key		2
-#endif
-//
-// Speed potentiometer
-// Use pot from 1k to 10k
-// connected to 3.3 V (!)
-//
-#define potentiometer			0  // use A2 if speed pot connected
-#ifdef FEATURE_COMMAND_BUTTONS
-  #define analog_buttons_pin		A3
-#endif
-
-////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Output lines: CW, PTT, square wave side tone
-// CW and PTT line *must* be nonzero even if only MIDI is to be used
-//
-////////////////////////////////////////////////////////////////////////////////////////////
-
-#define tx_key_line_1			4
-#define ptt_tx_1			5
-#define sidetone_line			0  // not needed with TeensyUSBAudioMidi
-
-
-////////////////////////////////////////////////////////////////////////////////////////////
-//
-// All other lines are unused for the Teensy keyer
-// Any FEATURES below that assign non-zero I/O pins
-// must be carefully studied if such I/O pins are
-// still available (there are some additional pins on the
-// Teensy-4.0 back side)
-//
-// For standard cases, no change should be necessary below this line.
-//
-////////////////////////////////////////////////////////////////////////////////////////////
-
-
-#define tx_key_line_2 		0
-#define tx_key_line_3 		0
-#define tx_key_line_4 		0
-#define tx_key_line_5 		0
-#define tx_key_line_6 		0
-
+#define paddle_left 1
+#define paddle_right 0
+#define tx_key_line_1 13       // LED! (high = key down/tx on)
+#define tx_key_line_2 0
+#define tx_key_line_3 0
+#define tx_key_line_4 0
+#define tx_key_line_5 0
+#define tx_key_line_6 0
+#define sidetone_line 4         // connect a speaker for sidetone
+#define potentiometer A0        // Speed potentiometer (0 to 5 V) Use pot from 1k to 10k
 // PTT ("push to talk") lines
-#define ptt_tx_2 		0
-#define ptt_tx_3 		0
-#define ptt_tx_4 		0
-#define ptt_tx_5 		0
-#define ptt_tx_6 		0
-#define tx_key_dit 		0            // if defined, goes active for dit (any transmitter) - customized with tx_key_dit_and_dah_pins_active_state and tx_key_dit_and_dah_pins_inactive_state
-#define tx_key_dah 		0            // if defined, goes active for dah (any transmitter) - customized with tx_key_dit_and_dah_pins_active_state and tx_key_dit_and_dah_pins_inactive_state
+#define ptt_tx_1 5              // not really used but otherwise there will be no PTT action via MIDI
+#define ptt_tx_2 0              //   Can be used for keying fox transmitter, T/R switch, or keying slow boatanchors
+#define ptt_tx_3 0              //   These are optional - set to 0 if unused
+#define ptt_tx_4 0
+#define ptt_tx_5 0
+#define ptt_tx_6 0
+#define tx_key_dit 0            // if defined, goes active for dit (any transmitter) - customized with tx_key_dit_and_dah_pins_active_state and tx_key_dit_and_dah_pins_inactive_state
+#define tx_key_dah 0            // if defined, goes active for dah (any transmitter) - customized with tx_key_dit_and_dah_pins_active_state and tx_key_dit_and_dah_pins_inactive_state
 
 #define potentiometer_enable_pin 0  // if defined, the potentiometer will be enabled only when this pin is held low; set to 0 to ignore this pin
 
 #ifdef FEATURE_COMMAND_BUTTONS
+  #define analog_buttons_pin A1
   #define command_mode_active_led 0
 #endif //FEATURE_COMMAND_BUTTONS
 
@@ -156,6 +93,10 @@ FEATURE_SIDETONE_SWITCH
 #ifdef FEATURE_PTT_INTERLOCK
   #define ptt_interlock 0  // this pin disables PTT and TX KEY
 #endif //FEATURE_PTT_INTERLOCK
+
+#ifdef FEATURE_STRAIGHT_KEY
+  #define pin_straight_key 2
+#endif //FEATURE_STRAIGHT_KEY
 
 #ifdef FEATURE_CW_DECODER
   #define cw_decoder_pin A3//A11 //A5 //A3  
