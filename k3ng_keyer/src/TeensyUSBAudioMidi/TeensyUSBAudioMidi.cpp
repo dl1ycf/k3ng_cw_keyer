@@ -35,6 +35,16 @@ void TeensyUSBAudioMidi::setup(void)
     sgtl5000.volume(0.8);
 #endif    
 
+#if defined(tx_key_line_teensy1)
+    pinMode (tx_key_line_teensy1, OUTPUT);
+    digitalWrite (tx_key_line_teensy1, LOW);
+#endif
+
+#if defined(tx_key_line_teensy2)
+    pinMode (tx_key_line_teensy2, OUTPUT);
+    digitalWrite (tx_key_line_teensy2, HIGH);
+#endif
+
     AudioInterrupts();
 
 }
@@ -110,9 +120,24 @@ void TeensyUSBAudioMidi::key(int state)
 {
     teensyaudiotone.setTone(state);
     if (state) {
-        usbMIDI.sendNoteOn(OPTION_MIDI_CW_NOTE, 99, OPTION_MIDI_CW_CHANNEL);
+        usbMIDI.sendNoteOn(OPTION_MIDI_CW_NOTE, 127, OPTION_MIDI_CW_CHANNEL);
+#if defined(tx_key_line_teensy1)
+        digitalWrite (tx_key_line_teensy1, HIGH);
+#endif
+
+#if defined(tx_key_line_teensy2)
+        digitalWrite (tx_key_line_teensy2, LOW);
+#endif
+
     } else {
         usbMIDI.sendNoteOff(OPTION_MIDI_CW_NOTE, 0, OPTION_MIDI_CW_CHANNEL);
+#if defined(tx_key_line_teensy1)
+        digitalWrite (tx_key_line_teensy1, LOW);
+#endif
+
+#if defined(tx_key_line_teensy2)
+        digitalWrite (tx_key_line_teensy2, HIGH);
+#endif
     }
     // These messages are time-critical so flush buffer
     usbMIDI.send_now();

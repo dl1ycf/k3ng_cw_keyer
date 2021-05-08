@@ -35,7 +35,7 @@
 // Set defaults
 //
 #ifndef OPTION_MIDI_CW_NOTE
-#define OPTION_MIDI_CW_NOTE 127
+#define OPTION_MIDI_CW_NOTE 1
 #endif
 #ifndef OPTION_MIDI_CW_CHANNEL
 #define OPTION_MIDI_CW_CHANNEL 1   // use channel 1 as default
@@ -49,6 +49,12 @@
 #ifndef OPTION_SIDETONE_FREQ
 #define OPTION_SIDETONE_FREQ  600
 #endif
+
+
+// FIXME: Don't define these here...
+#define tx_key_line_teensy1 14
+#define tx_key_line_teensy2 15
+
 
 class TeensyUSBAudioMidi
 {
@@ -66,9 +72,9 @@ public:
         patchinr (usbaudioinput,   1, teensyaudiotone, 1),
         patchwav (sine,            0, teensyaudiotone, 2),
         patchoutl(teensyaudiotone, 0, audioout,        0),
-        patchoutr(teensyaudiotone, 1, audioout,        1),
-        patchusboutl(teensyaudiotone, 0, usbaudiooutput, 0),
-        patchusboutr(teensyaudiotone, 1, usbaudiooutput, 1)
+        patchoutr(teensyaudiotone, 1, audioout,        1)
+        //patchusboutl(teensyaudiotone, 0, usbaudiooutput, 0),
+        //patchusboutr(teensyaudiotone, 1, usbaudiooutput, 1)
 
     {
     }
@@ -97,8 +103,8 @@ private:
     AudioConnection         patchwav;
     AudioConnection         patchoutl;
     AudioConnection         patchoutr;
-    AudioConnection         patchusboutl;
-    AudioConnection         patchusboutr;
+    //AudioConnection         patchusboutl;
+    //AudioConnection         patchusboutr;
 
     //
     // Side tone level (amplitude), in 20 steps from zero to one, about 2 dB per step
