@@ -13,6 +13,11 @@
 #define tx_key_line_4 0
 #define tx_key_line_5 0
 #define tx_key_line_6 0
+//
+// ATTENTION: the sidetone_line will also be used if it is zero.
+//            seemingly, the side tone cannot be deactivated,
+//            so choose an "unused but free" digital output line here.
+//
 #define sidetone_line 4         // connect a speaker for sidetone
 #define potentiometer A2        // Speed potentiometer (0 to 5 V) Use pot from 1k to 10k
 // PTT ("push to talk") lines

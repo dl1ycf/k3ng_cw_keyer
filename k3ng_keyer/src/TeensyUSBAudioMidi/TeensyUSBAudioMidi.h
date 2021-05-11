@@ -30,7 +30,9 @@
 #include "TeensyAudioTone.h"
 
 #include "../../keyer_features_and_options_teensy_usbaudiomidi.h"
+#ifndef keyer_pin_settings_h
 #include "../../keyer_pin_settings_teensy_usbaudiomidi.h"
+#endif
 
 //
 // Set defaults
@@ -66,10 +68,12 @@ public:
         patchinl (usbaudioinput,   0, teensyaudiotone, 0),
         patchinr (usbaudioinput,   1, teensyaudiotone, 1),
         patchwav (sine,            0, teensyaudiotone, 2),
+#ifdef OPTION_ROUTE_AUDIO_BACK
+        patchusboutl(teensyaudiotone, 0, usbaudiooutput, 0),
+        patchusboutr(teensyaudiotone, 1, usbaudiooutput, 1),
+#endif
         patchoutl(teensyaudiotone, 0, audioout,        0),
-        patchoutr(teensyaudiotone, 1, audioout,        1)
-        //patchusboutl(teensyaudiotone, 0, usbaudiooutput, 0),
-        //patchusboutr(teensyaudiotone, 1, usbaudiooutput, 1)
+        patchoutr(teensyaudiotone, 1, audioout,        1) 
 
     {
     }
@@ -96,10 +100,12 @@ private:
     AudioConnection         patchinl;
     AudioConnection         patchinr;
     AudioConnection         patchwav;
+#ifdef OPTION_ROUTE_AUDIO_BACK
+    AudioConnection         patchusboutl;
+    AudioConnection         patchusboutr;
+#endif
     AudioConnection         patchoutl;
     AudioConnection         patchoutr;
-    //AudioConnection         patchusboutl;
-    //AudioConnection         patchusboutr;
 
     float sine_level;    // this is used to detect "no side tone volume"
     //
