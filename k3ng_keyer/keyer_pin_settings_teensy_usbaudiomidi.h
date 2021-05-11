@@ -2,16 +2,24 @@
 #ifndef keyer_pin_settings_h
 #define keyer_pin_settings_h
 
+#define tx_key_line_teensy1 14
+#define tx_key_line_teensy2 15
+
 #define paddle_left 1
 #define paddle_right 0
-#define tx_key_line_1 13       // LED! (high = key down/tx on)
-#define tx_key_line_2 0
+#define tx_key_line_1 0 
+#define tx_key_line_2 0 
 #define tx_key_line_3 0
 #define tx_key_line_4 0
 #define tx_key_line_5 0
 #define tx_key_line_6 0
+//
+// ATTENTION: the sidetone_line will also be used if it is zero.
+//            seemingly, the side tone cannot be deactivated,
+//            so choose an "unused but free" digital output line here.
+//
 #define sidetone_line 4         // connect a speaker for sidetone
-#define potentiometer A0        // Speed potentiometer (0 to 5 V) Use pot from 1k to 10k
+#define potentiometer A2        // Speed potentiometer (0 to 5 V) Use pot from 1k to 10k
 // PTT ("push to talk") lines
 #define ptt_tx_1 5              // not really used but otherwise there will be no PTT action via MIDI
 #define ptt_tx_2 0              //   Can be used for keying fox transmitter, T/R switch, or keying slow boatanchors

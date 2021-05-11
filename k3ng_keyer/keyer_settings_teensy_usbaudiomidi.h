@@ -32,7 +32,7 @@
 #define default_first_extension_time 0   // number of milliseconds to extend first sent dit or dah
 #define default_pot_full_scale_reading 1023
 #define default_weighting 50             // 50 = weighting factor of 1 (normal)
-#define default_ptt_hang_time_wordspace_units 0.0
+#define default_ptt_hang_time_wordspace_units 1.33
 #define winkey_c0_wait_time 1            // the number of milliseconds to wait to send 0xc0 byte after send buffer has been sent
 #define winkey_command_timeout_ms 5000
 #define winkey_discard_bytes_startup 3   // this is used if OPTION_WINKEY_DISCARD_BYTES_AT_STARTUP is enabled above
@@ -107,18 +107,12 @@
     #define WINKEY_DEFAULT_BAUD 1200
   #endif //OPTION_WINKEY_UCXLOG_9600_BAUD  || FEATURE_SO2R_BASE
 // alter these below to map alternate sidetones for Winkey interface protocol emulation
+//
+// I changed this. As far as I know, the WinKey2 frequencies
+// are of the form 4000/n while the WinKey1 frequencies were
+// slightly different, 3759/n.
+//
 #ifdef OPTION_WINKEY_2_SUPPORT
-	#define WINKEY_SIDETONE_1 3759
-	#define WINKEY_SIDETONE_2 1879
-	#define WINKEY_SIDETONE_3 1252
-	#define WINKEY_SIDETONE_4 940
-	#define WINKEY_SIDETONE_5 752
-	#define WINKEY_SIDETONE_6 625
-	#define WINKEY_SIDETONE_7 535
-	#define WINKEY_SIDETONE_8 469
-	#define WINKEY_SIDETONE_9 417
-	#define WINKEY_SIDETONE_10 375
-#else //OPTION_WINKEY_2_SUPPORT
 	#define WINKEY_SIDETONE_1 4000
 	#define WINKEY_SIDETONE_2 2000
 	#define WINKEY_SIDETONE_3 1333
@@ -129,6 +123,17 @@
 	#define WINKEY_SIDETONE_8 500
 	#define WINKEY_SIDETONE_9 444
 	#define WINKEY_SIDETONE_10 400
+#else //OPTION_WINKEY_2_SUPPORT
+	#define WINKEY_SIDETONE_1 3759
+	#define WINKEY_SIDETONE_2 1879
+	#define WINKEY_SIDETONE_3 1252
+	#define WINKEY_SIDETONE_4 940
+	#define WINKEY_SIDETONE_5 752 
+	#define WINKEY_SIDETONE_6 625
+	#define WINKEY_SIDETONE_7 535
+	#define WINKEY_SIDETONE_8 469
+	#define WINKEY_SIDETONE_9 417
+	#define WINKEY_SIDETONE_10 375
 #endif //OPTION_WINKEY_2_SUPPORT
 
 #define WINKEY_1_REPORT_VERSION_NUMBER 10

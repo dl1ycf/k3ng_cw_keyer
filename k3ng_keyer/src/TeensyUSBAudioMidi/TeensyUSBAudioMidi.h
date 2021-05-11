@@ -30,6 +30,9 @@
 #include "TeensyAudioTone.h"
 
 #include "../../keyer_features_and_options_teensy_usbaudiomidi.h"
+#ifndef keyer_pin_settings_h
+#include "../../keyer_pin_settings_teensy_usbaudiomidi.h"
+#endif
 
 //
 // Set defaults
@@ -50,12 +53,6 @@
 #define OPTION_SIDETONE_FREQ  600
 #endif
 
-
-// FIXME: Don't define these here...
-#define tx_key_line_teensy1 14
-#define tx_key_line_teensy2 15
-
-
 class TeensyUSBAudioMidi
 {
 public:
@@ -71,10 +68,12 @@ public:
         patchinl (usbaudioinput,   0, teensyaudiotone, 0),
         patchinr (usbaudioinput,   1, teensyaudiotone, 1),
         patchwav (sine,            0, teensyaudiotone, 2),
+#ifdef OPTION_ROUTE_AUDIO_BACK
+        patchusboutl(teensyaudiotone, 0, usbaudiooutput, 0),
+        patchusboutr(teensyaudiotone, 1, usbaudiooutput, 1),
+#endif
         patchoutl(teensyaudiotone, 0, audioout,        0),
-        patchoutr(teensyaudiotone, 1, audioout,        1)
-        //patchusboutl(teensyaudiotone, 0, usbaudiooutput, 0),
-        //patchusboutr(teensyaudiotone, 1, usbaudiooutput, 1)
+        patchoutr(teensyaudiotone, 1, audioout,        1) 
 
     {
     }
@@ -101,18 +100,21 @@ private:
     AudioConnection         patchinl;
     AudioConnection         patchinr;
     AudioConnection         patchwav;
+#ifdef OPTION_ROUTE_AUDIO_BACK
+    AudioConnection         patchusboutl;
+    AudioConnection         patchusboutr;
+#endif
     AudioConnection         patchoutl;
     AudioConnection         patchoutr;
-    //AudioConnection         patchusboutl;
-    //AudioConnection         patchusboutr;
 
+    float sine_level;    // this is used to detect "no side tone volume"
     //
     // Side tone level (amplitude), in 20 steps from zero to one, about 2 dB per step
     // This is used to convert the value from the (linear) volume pot to an amplitude level
     //
     float VolTab[21]={0.000,0.0126,0.0158,0.0200,0.0251,0.0316,0.0398,0.0501,0.0631,0.0794,
                       0.100,0.1258,0.1585,0.1995,0.2511,0.3162,0.3981,0.5012,0.6309,0.7943,1.0000};
-    
+
 };
 
 #endif

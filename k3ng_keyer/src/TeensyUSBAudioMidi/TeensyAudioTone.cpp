@@ -142,7 +142,7 @@ void TeensyAudioTone::update(void)
     // if allocation of block_sidetone constantly fails.
     //
     block_sidetone=NULL;
-    if ((tone || windowindex) && block_sine) {
+    if ((tone || windowindex || hangtime) && block_sine) {
       block_sidetone=allocate();
     }
 
@@ -157,7 +157,7 @@ void TeensyAudioTone::update(void)
                 }
                 block_sidetone->data[i]=t;
             }
-        } else {
+        } else if (windowindex > 0) {
             // Apply ramp down until 0 window index
             if (windowindex > WINDOW_TABLE_LENGTH) windowindex = WINDOW_TABLE_LENGTH;
             for (i = 0; i < AUDIO_BLOCK_SAMPLES; i++) {
@@ -168,6 +168,17 @@ void TeensyAudioTone::update(void)
                 }
                 block_sidetone->data[i] = t;
             }
+        } else if (hangtime > 0) {
+          //
+          // do not route RX audio for up to "hangtime" msec after the last sent
+          // CW element. Any CW element starting within the hang time will generate
+          // a side tone as normal. Do not process hangtime at high resolution, always
+          // produce full audio sample buffers
+          //
+          for (i = 0; i < AUDIO_BLOCK_SAMPLES; i++) {
+            block_sidetone->data[i] = 0;
+            if (hangtime > 0) hangtime--;
+          }
         }
         // Use same data for both ears
         transmit(block_sidetone,0);
@@ -175,7 +186,8 @@ void TeensyAudioTone::update(void)
         release(block_sidetone);
     } else {
 
-        windowindex = 0;
+        windowindex = 0;  // just in case we arrive here because of a failed allocation
+        hangtime = 0;     // just in case we arrive here because of a failed allocation
         if (block_inl) transmit(block_inl,0);
         if (block_inr) transmit(block_inr,1);
     }
