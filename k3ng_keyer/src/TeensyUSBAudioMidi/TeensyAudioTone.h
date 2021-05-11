@@ -28,7 +28,14 @@
 #include "AudioStream.h"
 #include "arm_math.h"
 
-#define SAMPLES_PER_MSEC (AUDIO_SAMPLE_RATE_EXACT/1000.0)
+// include this to import OPTIONS_TRAILING_MUTE
+#include "../../keyer_features_and_options_teensy_usbaudiomidi.h"
+
+#ifndef OPTION_TRAILING_MUTE
+#define OPTION_TRAILING_MUTE 0
+#endif
+
+const uint16_t SAMPLES_PER_MSEC = AUDIO_SAMPLE_RATE/1000;
 
 void speed_set(int);
 
@@ -37,28 +44,19 @@ class TeensyAudioTone : public AudioStream
 public:
     TeensyAudioTone() : AudioStream(3, inputQueueArray) {
         tone = 0;
-        hangtime = milliseconds2count(6.0);
         windowindex = 0;
+        hangtime = 0;
     }
 
     virtual void update(void);
 
     void setTone(uint8_t state) {
         tone = state;
-    }
-
-    void setHangTime(float milliseconds) {
-        hangtime = milliseconds2count(milliseconds);
-        speed_set(13);
+        if (state == 1) hangtime = OPTION_TRAILING_MUTE * SAMPLES_PER_MSEC;
+        // if OPTION_TRALING_MUTE == 0, hangtime remains zero and then has no effect
     }
 
 private:
-    uint16_t milliseconds2count(float milliseconds) {
-        if (milliseconds < 0.0) milliseconds = 0.0;
-        uint32_t c = ((uint32_t)(milliseconds*SAMPLES_PER_MSEC)+7)>>3;
-        if (c > 65535) c = 65535; // allow up to 11.88 seconds
-        return c;
-    }
     audio_block_t *inputQueueArray[3];
 
     uint8_t tone;         // tone on/off flag
@@ -67,5 +65,4 @@ private:
     uint8_t windowindex;  // pointer into the "ramp"
 };
 
-#undef SAMPLES_PER_MSEC
 #endif
