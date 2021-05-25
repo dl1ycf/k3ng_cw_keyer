@@ -58,7 +58,9 @@ class TeensyUSBAudioMidi
 public:
     TeensyUSBAudioMidi() :
         usbaudioinput(),
+#ifdef OPTION_ROUTE_AUDIO_BACK
         usbaudiooutput(),
+#endif
         sine(),
         teensyaudiotone(),
         audioout(),
@@ -88,7 +90,9 @@ public:
 
 private:
     AudioInputUSB           usbaudioinput;
+#ifdef OPTION_ROUTE_AUDIO_BACK
     AudioOutputUSB          usbaudiooutput;
+#endif
     AudioSynthWaveformSine  sine;
     TeensyAudioTone         teensyaudiotone;
 #ifdef OPTION_AUDIO_MQS

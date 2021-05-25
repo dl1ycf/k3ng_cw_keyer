@@ -35,7 +35,10 @@
 #define OPTION_TRAILING_MUTE 0
 #endif
 
-const uint16_t SAMPLES_PER_MSEC = AUDIO_SAMPLE_RATE/1000;
+//
+// if OPTION_TRAILING_MUTE is zero, MUTE_FRAMES is also zero and then has no effect
+//
+const uint16_t MUTE_BLOCKS = ((long) AUDIO_SAMPLE_RATE)*OPTION_TRAILING_MUTE / (1000L * (long) AUDIO_BLOCK_SAMPLES);
 
 void speed_set(int);
 
@@ -45,24 +48,21 @@ public:
     TeensyAudioTone() : AudioStream(3, inputQueueArray) {
         tone = 0;
         windowindex = 0;
-        hangtime = 0;
+        muteindex = 0;
     }
 
     virtual void update(void);
 
     void setTone(uint8_t state) {
         tone = state;
-        if (state == 1) hangtime = OPTION_TRAILING_MUTE * SAMPLES_PER_MSEC;
-        // if OPTION_TRALING_MUTE == 0, hangtime remains zero and then has no effect
     }
 
 private:
     audio_block_t *inputQueueArray[3];
 
-    uint8_t tone;         // tone on/off flag
-
-    uint16_t hangtime;
-    uint8_t windowindex;  // pointer into the "ramp"
+    uint8_t  tone;         // tone on/off flag
+    uint16_t muteindex;    // counts "mute blocks"
+    uint8_t  windowindex;  // pointer into the "ramp"
 };
 
 #endif
